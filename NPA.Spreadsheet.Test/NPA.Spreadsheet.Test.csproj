@@ -56,6 +56,9 @@
     <Content Include="SampleFiles\File.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\sss.xls">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPA.Spreadsheet\NPA.Spreadsheet.csproj">

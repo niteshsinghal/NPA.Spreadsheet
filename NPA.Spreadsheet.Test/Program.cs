@@ -12,7 +12,7 @@ namespace NPA.Spreadsheet.Test
         static void Main(string[] args)
         {
           
-            string _filePath = Path.Combine(Environment.CurrentDirectory, @"SampleFiles\File.csv");
+            string _filePath = Path.Combine(Environment.CurrentDirectory, @"SampleFiles\sss.xls");
             //// .csv , .xls , .xlsx 
             var inputFile = new FileInfo(_filePath);
             var sheet = Spreadsheet.Read(inputFile);
