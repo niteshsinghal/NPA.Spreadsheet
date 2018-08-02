@@ -6,6 +6,11 @@ namespace NPA.Spreadsheet
 {
     internal class XlsReader : IReader
     {
+        /// <summary>
+        /// Read all rows
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <returns></returns>
         public IList<IList<string>> Read(FileInfo inputFile)
         {
             var fs = new POIFSFileSystem(inputFile.OpenRead());
@@ -15,6 +20,11 @@ namespace NPA.Spreadsheet
             converter.Process();
             return converter.Output;
         }
+        /// <summary>
+        /// Read Header or First Row
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <returns></returns>
         public IList<IList<string>> ReadFirstRow(FileInfo inputFile)
         {
             var returndata = Read(inputFile);
@@ -25,6 +35,18 @@ namespace NPA.Spreadsheet
 
             return Output;
 
+        }
+
+       /// <summary>
+       /// Return specified number of rows only
+       /// </summary>
+       /// <param name="inputFile"></param>
+       /// <param name="numberOfRows"></param>
+       /// <returns></returns>
+        public IList<IList<string>> ReadFirstNRow(FileInfo inputFile,int numberOfRows)
+        {
+            var returndata = Read(inputFile);
+            return returndata.Take(numberOfRows).ToList();
         }
     }
 }
