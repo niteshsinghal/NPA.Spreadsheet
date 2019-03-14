@@ -12,7 +12,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using Cell = DocumentFormat.OpenXml.Spreadsheet.Cell;
 using Sheet = DocumentFormat.OpenXml.Spreadsheet.Sheet;
-
+using Row = DocumentFormat.OpenXml.Spreadsheet.Row;
 namespace NPA.Spreadsheet
 {
     internal class XlsxReader : IReader
@@ -91,38 +91,43 @@ namespace NPA.Spreadsheet
 
                 var wsPart = (WorksheetPart)(wbPart.GetPartById(sheet.Id));
 
-                var cells = wsPart.Worksheet.Descendants<Cell>()
-                    .OrderBy(ReverseColumnRow);
-
-                // Read rows
-                var row = new List<string>();
-                var ColumnCount = 0;
-                foreach (var cell in cells)
+                var rows = wsPart.Worksheet.Descendants<Row>();
+                if (rows.Count() > 0)
                 {
-                    int columnCode, rowCode;
-                    ColumnRow(cell, out columnCode, out rowCode);
-                    while (rowCode > table.Count)
+                    var cells = rows.FirstOrDefault().Elements<Cell>();
+                    //var cells = wsPart.Worksheet.Descendants<Cell>()
+                    //.OrderBy(ReverseColumnRow);
+
+                    // Read rows
+                    var row = new List<string>();
+                    //var ColumnCount = 0;
+                    foreach (var cell in cells)
                     {
-                        if (ColumnCount == 0) ColumnCount = row.Count;
-                        if (row.Count < ColumnCount)
+                        int columnCode, rowCode;
+                        ColumnRow(cell, out columnCode, out rowCode);
+                        while (rowCode > table.Count)
                         {
-                            var SkipColumn = ColumnCount - row.Count;
-                            for (int col = 0; col < SkipColumn; col++)
-                                row.Add("");
+                            //if (ColumnCount == 0) ColumnCount = row.Count;
+                            //if (row.Count < ColumnCount)
+                            //{
+                            //    var SkipColumn = ColumnCount - row.Count;
+                            //    for (int col = 0; col < SkipColumn; col++)
+                            //        row.Add("");
+                            //}
+                            table.Add(row);
+                            return table;
                         }
-                        table.Add(row);
-                        return table;
+
+                        //while (row.Count < columnCode)
+                        //    row.Add("");
+
+                        // Discard values without header
+
+                        row.Add(GetCellValue(wbPart, cell));
                     }
-                    
-                    while (row.Count < columnCode)
-                        row.Add("");
 
-                    // Discard values without header
-
-                    row.Add(GetCellValue(wbPart, cell));
+                    table.Add(row);
                 }
-
-                table.Add(row);
             }
 
             return table;
@@ -293,9 +298,13 @@ namespace NPA.Spreadsheet
         private string FormatCellContents(string value, int formatIndex, string formatString)
         {
             double d = 0;
+            
             if ((value.StartsWith("0") && !value.Contains(".")) || value.ToUpper().Contains("E"))
             {
-                return value;
+                if (formatIndex == 164)
+                    return _dataFormatter.FormatRawCellContents(d, formatIndex, formatString);
+                else
+                    return value;
             }
             else
             {
