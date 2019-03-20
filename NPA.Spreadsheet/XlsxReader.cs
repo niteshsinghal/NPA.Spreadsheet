@@ -316,7 +316,15 @@ namespace NPA.Spreadsheet
                 {
                     return value;
                 }
-                return _dataFormatter.FormatRawCellContents(d, formatIndex, formatString);
+                try
+                {
+                    return _dataFormatter.FormatRawCellContents(d, formatIndex, formatString);
+                }
+                catch
+                {
+                    return value;
+                }
+                
             }
         }
     }
