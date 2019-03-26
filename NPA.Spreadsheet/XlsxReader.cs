@@ -301,10 +301,17 @@ namespace NPA.Spreadsheet
             
             if ((value.StartsWith("0") && !value.Contains(".")) || value.ToUpper().Contains("E"))
             {
-                if (formatIndex == 164)
-                    return _dataFormatter.FormatRawCellContents(d, formatIndex, formatString);
-                else
+                try
+                {
+                    if (formatIndex == 164 || formatIndex == 165)
+                        return _dataFormatter.FormatRawCellContents(d, formatIndex, formatString);
+                    else
+                        return value;
+                }
+                catch
+                {
                     return value;
+                }
             }
             else
             {
